@@ -1,0 +1,8 @@
+streamlit>=1.32.0
+pandas
+folium
+streamlit-folium
+plotly
+scikit-learn
+requests
+pydantic

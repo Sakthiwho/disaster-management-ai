@@ -1,0 +1,30 @@
+import streamlit as st
+import pandas as pd
+from database.db_manager import get_connection
+
+
+def show_rescue_requests():
+
+    st.title("🚑 Rescue Help Requests")
+
+    conn = get_connection()
+
+    df = pd.read_sql_query("SELECT * FROM help_requests ORDER BY timestamp DESC", conn)
+
+    conn.close()
+
+    if df.empty:
+        st.info("No help requests yet.")
+        return
+
+    for _, row in df.iterrows():
+
+        st.error(f"HELP REQUEST — {row['timestamp']}")
+
+        st.write("Location:", row["latitude"], row["longitude"])
+        st.write("Message:", row["message"])
+
+        if row["image_path"]:
+            st.image(row["image_path"], width=300)
+
+        st.divider()
