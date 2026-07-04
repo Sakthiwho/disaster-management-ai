@@ -74,7 +74,6 @@ def show_admin_help_requests():
     # -----------------------------
 
     st.subheader("📋 Help Request Table")
-
     st.dataframe(df, width="stretch")
 
     st.divider()
@@ -121,8 +120,19 @@ def show_admin_help_requests():
         elif status == "RESOLVED":
             st.success("Status: RESOLVED")
 
-        if r["Image"]:
-            st.image(r["Image"], width=300)
+        # -----------------------------
+        # DISPLAY IMAGE SAFELY
+        # -----------------------------
+
+        image_path = r["Image"]
+
+        if image_path:
+
+            if os.path.exists(image_path):
+                st.image(image_path, width=300)
+
+            else:
+                st.warning("📷 Image not available")
 
         col1, col2 = st.columns(2)
 
@@ -134,11 +144,15 @@ def show_admin_help_requests():
 
             update_help_status(request_id, "RESCUE SENT")
 
-            log = f"[{datetime.now().strftime('%H:%M:%S')}] 🚑 Rescue team dispatched → Request #{request_id}"
+            log = (
+                f"[{datetime.now().strftime('%H:%M:%S')}] "
+                f"🚑 Rescue team dispatched → Request #{request_id}"
+            )
 
             st.session_state.activity_log.append(log)
 
             st.success("Rescue team dispatched")
+            st.rerun()
 
         # -----------------------------
         # MARK RESOLVED
@@ -148,8 +162,12 @@ def show_admin_help_requests():
 
             update_help_status(request_id, "RESOLVED")
 
-            log = f"[{datetime.now().strftime('%H:%M:%S')}] ✅ Request #{request_id} resolved"
+            log = (
+                f"[{datetime.now().strftime('%H:%M:%S')}] "
+                f"✅ Request #{request_id} resolved"
+            )
 
             st.session_state.activity_log.append(log)
 
             st.success("Request marked as resolved")
+            st.rerun()
